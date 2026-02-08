@@ -1,0 +1,26 @@
+timezone: Asia/Kolkata
+mode: scheduled_auto_run
+daily_cap: 70
+session_cap: 235
+sessions:
+  - "04:30"
+  - "08:30"
+  - "13:30"
+  - "18:00"
+days:
+  - MO
+  - TU
+  - WE
+  - TH
+  - FR
+  - SA
+  - SU
+active_window: "04:00-19:00"
+gap_minutes_random: "5-10"
+rate_limit_pause_minutes: 30
+rate_limit_retry_max: 5
+batch_enabled: false
+promotion_policy: none
+approval_ramp_days: 0
+approval_timeout_minutes: 2
+approval_timeout_action: skip_and_continue

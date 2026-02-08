@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reddit Commenter Safe"
+  short_description: "Safety-first Reddit commenter automation"
+  default_prompt: "Use $reddit-commenter-safe to run a safety-checked Reddit comment session."

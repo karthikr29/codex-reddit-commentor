@@ -1,0 +1,239 @@
+#!/usr/bin/env python3
+"""State manager for reddit-commenter-safe runtime."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from datetime import date, datetime, timezone
+from pathlib import Path
+from typing import Any
+
+
+def today_iso() -> str:
+    return date.today().isoformat()
+
+
+def state_paths(runtime_root: Path) -> dict[str, Path]:
+    state_dir = runtime_root / "state"
+    return {
+        "state_dir": state_dir,
+        "daily": state_dir / "daily_state.json",
+        "ramp": state_dir / "ramp_state.json",
+        "lock": state_dir / "session.lock",
+    }
+
+
+def write_json(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
+
+
+def read_json(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
+    if not path.exists():
+        return fallback
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def default_daily_state(day: str | None = None) -> dict[str, Any]:
+    return {
+        "date": day or today_iso(),
+        "total_comments": 0,
+        "per_subreddit": {},
+        "commented_post_urls": [],
+        "session_counts": {},
+    }
+
+
+def default_ramp_state() -> dict[str, Any]:
+    return {
+        "ramp_start_date": None,
+        "approval_ramp_days": 7,
+    }
+
+
+def cmd_init_day(runtime_root: Path, day: str | None) -> None:
+    paths = state_paths(runtime_root)
+    state = default_daily_state(day=day)
+    write_json(paths["daily"], state)
+    print(json.dumps(state, ensure_ascii=True, indent=2))
+
+
+def cmd_acquire_lock(runtime_root: Path, session: str) -> int:
+    paths = state_paths(runtime_root)
+    lock_path = paths["lock"]
+    if lock_path.exists():
+        print(lock_path.read_text(encoding="utf-8").strip())
+        return 3
+
+    payload = {
+        "session": session,
+        "acquired_at": datetime.now(timezone.utc).isoformat(),
+        "pid": os.getpid(),
+    }
+    write_json(lock_path, payload)
+    print(json.dumps(payload, ensure_ascii=True, indent=2))
+    return 0
+
+
+def cmd_release_lock(runtime_root: Path) -> None:
+    paths = state_paths(runtime_root)
+    if paths["lock"].exists():
+        paths["lock"].unlink()
+    print("released")
+
+
+def load_daily(paths: dict[str, Path]) -> dict[str, Any]:
+    state = read_json(paths["daily"], default_daily_state())
+    if state.get("date") != today_iso():
+        state = default_daily_state(day=today_iso())
+        write_json(paths["daily"], state)
+    return state
+
+
+def cmd_update_count(runtime_root: Path, subreddit: str, increment: int, post_url: str | None) -> None:
+    paths = state_paths(runtime_root)
+    state = load_daily(paths)
+
+    per_sub = state.setdefault("per_subreddit", {})
+    per_sub[subreddit] = int(per_sub.get(subreddit, 0)) + increment
+    state["total_comments"] = int(state.get("total_comments", 0)) + increment
+
+    if post_url:
+        urls = state.setdefault("commented_post_urls", [])
+        if post_url not in urls:
+            urls.append(post_url)
+
+    write_json(paths["daily"], state)
+    print(json.dumps(state, ensure_ascii=True, indent=2))
+
+
+def cmd_remaining(runtime_root: Path, daily_cap: int, session_cap: int) -> None:
+    paths = state_paths(runtime_root)
+    state = load_daily(paths)
+    remaining_daily = max(0, daily_cap - int(state.get("total_comments", 0)))
+    session_target = min(session_cap, remaining_daily)
+    result = {
+        "date": state["date"],
+        "remaining_daily": remaining_daily,
+        "session_target": session_target,
+    }
+    print(json.dumps(result, ensure_ascii=True, indent=2))
+
+
+def cmd_should_skip(runtime_root: Path, post_url: str) -> int:
+    paths = state_paths(runtime_root)
+    state = load_daily(paths)
+    urls = set(state.get("commented_post_urls", []))
+    should_skip = post_url in urls
+    print(json.dumps({"post_url": post_url, "skip": should_skip}, ensure_ascii=True))
+    return 4 if should_skip else 0
+
+
+def cmd_set_ramp_start(runtime_root: Path, start_date: str) -> None:
+    paths = state_paths(runtime_root)
+    state = read_json(paths["ramp"], default_ramp_state())
+    state["ramp_start_date"] = start_date
+    write_json(paths["ramp"], state)
+    print(json.dumps(state, ensure_ascii=True, indent=2))
+
+
+def cmd_gate_mode(runtime_root: Path, check_date: str | None) -> None:
+    paths = state_paths(runtime_root)
+    ramp = read_json(paths["ramp"], default_ramp_state())
+    start = ramp.get("ramp_start_date")
+    days = int(ramp.get("approval_ramp_days", 7))
+    current = datetime.strptime(check_date or today_iso(), "%Y-%m-%d").date()
+
+    if not start:
+        mode = "approval"
+        day_index = 1
+    else:
+        start_date = datetime.strptime(start, "%Y-%m-%d").date()
+        delta = (current - start_date).days + 1
+        day_index = max(1, delta)
+        mode = "approval" if day_index <= days else "auto"
+
+    print(
+        json.dumps(
+            {
+                "date": current.isoformat(),
+                "ramp_start_date": start,
+                "approval_ramp_days": days,
+                "ramp_day": day_index,
+                "mode": mode,
+            },
+            ensure_ascii=True,
+            indent=2,
+        )
+    )
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Manage runtime state for reddit-commenter-safe.")
+    parser.add_argument("--runtime-root", required=True, help="Runtime root path.")
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    init_day = sub.add_parser("init-day")
+    init_day.add_argument("--date", help="Date in YYYY-MM-DD. Default today.")
+
+    acquire = sub.add_parser("acquire-lock")
+    acquire.add_argument("--session", required=True, help="Session label.")
+
+    sub.add_parser("release-lock")
+
+    update = sub.add_parser("update-count")
+    update.add_argument("--subreddit", required=True)
+    update.add_argument("--increment", type=int, default=1)
+    update.add_argument("--post-url")
+
+    remaining = sub.add_parser("remaining")
+    remaining.add_argument("--daily-cap", type=int, required=True)
+    remaining.add_argument("--session-cap", type=int, required=True)
+
+    should_skip = sub.add_parser("should-skip")
+    should_skip.add_argument("--post-url", required=True)
+
+    set_ramp = sub.add_parser("set-ramp-start")
+    set_ramp.add_argument("--start-date", required=True)
+
+    gate = sub.add_parser("gate-mode")
+    gate.add_argument("--date", help="Date in YYYY-MM-DD. Default today.")
+
+    return parser
+
+
+def main() -> int:
+    args = build_parser().parse_args()
+    runtime_root = Path(args.runtime_root).resolve()
+    runtime_root.mkdir(parents=True, exist_ok=True)
+
+    if args.cmd == "init-day":
+        cmd_init_day(runtime_root, args.date)
+        return 0
+    if args.cmd == "acquire-lock":
+        return cmd_acquire_lock(runtime_root, args.session)
+    if args.cmd == "release-lock":
+        cmd_release_lock(runtime_root)
+        return 0
+    if args.cmd == "update-count":
+        cmd_update_count(runtime_root, args.subreddit, args.increment, args.post_url)
+        return 0
+    if args.cmd == "remaining":
+        cmd_remaining(runtime_root, args.daily_cap, args.session_cap)
+        return 0
+    if args.cmd == "should-skip":
+        return cmd_should_skip(runtime_root, args.post_url)
+    if args.cmd == "set-ramp-start":
+        cmd_set_ramp_start(runtime_root, args.start_date)
+        return 0
+    if args.cmd == "gate-mode":
+        cmd_gate_mode(runtime_root, args.date)
+        return 0
+
+    raise ValueError(f"Unsupported command: {args.cmd}")
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

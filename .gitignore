@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+.venv_skill/
+venv/
+env/
+ENV/
+
+# OS / editor
+.DS_Store
+
+# Local tooling
+.claude/settings.local.json
+.playwright-mcp/
+
+# Runtime state + locks (generated)
+runtime/reddit-commenter/state/daily_state.json
+runtime/reddit-commenter/state/ramp_state.json
+runtime/reddit-commenter/state/session.lock
+
+# Runtime tracking logs (generated)
+runtime/reddit-commenter/tracking/reddit/*.md
+!runtime/reddit-commenter/tracking/reddit/template.md
