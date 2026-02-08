@@ -115,6 +115,55 @@ def evaluate_text(text: str, promotion_allowed: bool = False) -> dict[str, Any]:
     }
 
 
+FIX_HINTS = {
+    "no_em_dash": "Replace all em dashes with commas, periods, or short dashes (-).",
+    "no_semicolon": "Split semicolon-joined clauses into two separate sentences.",
+    "promo_blocked": "Remove promotional language entirely. Rewrite as genuine advice.",
+}
+
+PHRASE_ALTERNATIVES = {
+    "delve": "look at, dig into",
+    "dive into": "look at, get into",
+    "unpack": "break down, walk through",
+    "navigate": "work through, handle",
+    "landscape": "space, area",
+    "realm": "area, space",
+    "leverage": "use, take advantage of",
+    "utilize": "use, apply",
+    "robust": "solid, strong",
+    "comprehensive": "full, thorough",
+    "streamline": "simplify, speed up",
+    "furthermore": "also, plus",
+    "moreover": "also, and",
+    "additionally": "also, and",
+    "crucial": "important, key",
+    "vital": "important, key",
+    "essential": "important, needed",
+    "fascinating": "interesting, cool",
+    "intriguing": "interesting, curious",
+    "absolutely": "for sure, yes",
+    "definitely": "for sure, yes",
+    "great question": "good question, fair question",
+    "as someone who": "from my experience, having done",
+}
+
+
+def add_fix_hints(result: dict[str, Any]) -> dict[str, Any]:
+    """Add fix_hint field to each issue for rewrite guidance."""
+    for issue in result.get("issues", []):
+        rule = issue.get("rule", "")
+        phrase = issue.get("phrase", "").lower()
+
+        if rule == "banned_phrase" and phrase in PHRASE_ALTERNATIVES:
+            issue["fix_hint"] = f"Replace '{phrase}' with: {PHRASE_ALTERNATIVES[phrase]}"
+        elif rule in FIX_HINTS:
+            issue["fix_hint"] = FIX_HINTS[rule]
+        else:
+            issue["fix_hint"] = f"Remove or rewrite to fix: {issue.get('message', rule)}"
+
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate Reddit comment text against strict style guardrails.")
     source = parser.add_mutually_exclusive_group(required=True)
@@ -122,6 +171,7 @@ def main() -> int:
     source.add_argument("--file", help="Path to file containing comment text.")
     parser.add_argument("--promotion-allowed", action="store_true", help="Allow promotional wording checks to pass.")
     parser.add_argument("--json-only", action="store_true", help="Print only JSON output.")
+    parser.add_argument("--suggest-fix", action="store_true", help="Add fix_hint to each issue for rewrite guidance.")
     args = parser.parse_args()
 
     if args.file:
@@ -131,6 +181,9 @@ def main() -> int:
         text = args.text or ""
 
     result = evaluate_text(text=text, promotion_allowed=args.promotion_allowed)
+
+    if args.suggest_fix:
+        result = add_fix_hints(result)
 
     if args.json_only:
         print(json.dumps(result, ensure_ascii=True, indent=2))

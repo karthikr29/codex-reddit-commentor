@@ -170,6 +170,53 @@ def cmd_gate_mode(runtime_root: Path, check_date: str | None) -> None:
     )
 
 
+def cmd_update_diversity(runtime_root: Path, text_file: str) -> None:
+    """Record a comment fingerprint for diversity tracking."""
+    import re as _re
+
+    text = Path(text_file).read_text(encoding="utf-8")
+
+    # Classify opener
+    lower = text.strip().lower()
+    opener_patterns = {
+        "question": r"^(have you|do you|what if|why not|how about|is there|could you|would you|ever)",
+        "agreement": r"^(yeah|yes|agreed|same|exactly|right|true|this|100%)",
+        "counterpoint": r"^(but|however|actually|not sure|disagree|on the flip|tbh|honestly|nah)",
+        "anecdote": r"^(i (used to|was|had|tried|built|ran|worked)|we (had|tried|built)|my|when i)",
+        "fact": r"^(the|most|one|there|it|according|studies|data|research|a lot of|many)",
+        "opinion": r"^(i think|i feel|i believe|imo|personally|in my|i'd say|i would|i usually)",
+    }
+
+    opener_type = "direct"
+    for otype, pattern in opener_patterns.items():
+        if _re.match(pattern, lower):
+            opener_type = otype
+            break
+
+    words = len(_re.findall(r"\b\w+\b", text))
+    bucket = "short" if words < 20 else ("medium" if words <= 60 else "long")
+
+    fp = {
+        "opener_type": opener_type,
+        "word_count_bucket": bucket,
+        "has_question": "?" in text,
+        "paragraph_count": max(1, len([p for p in text.split("\n\n") if p.strip()])),
+        "starts_with_i": lower.startswith("i ") or lower.startswith("i'"),
+        "uses_list": bool(_re.search(r"^\s*[-*\d]+[.)]?\s", text, _re.MULTILINE)),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+    # Persist to diversity_state.json
+    diversity_path = runtime_root / "state" / "diversity_state.json"
+    state = read_json(diversity_path, [])
+    state.append(fp)
+    if len(state) > 30:
+        state = state[-30:]
+    write_json(diversity_path, state)
+
+    print(json.dumps(fp, ensure_ascii=True, indent=2))
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Manage runtime state for reddit-commenter-safe.")
     parser.add_argument("--runtime-root", required=True, help="Runtime root path.")
@@ -201,6 +248,9 @@ def build_parser() -> argparse.ArgumentParser:
     gate = sub.add_parser("gate-mode")
     gate.add_argument("--date", help="Date in YYYY-MM-DD. Default today.")
 
+    diversity = sub.add_parser("update-diversity")
+    diversity.add_argument("--text-file", required=True, help="Path to file with posted comment text.")
+
     return parser
 
 
@@ -230,6 +280,10 @@ def main() -> int:
         return 0
     if args.cmd == "gate-mode":
         cmd_gate_mode(runtime_root, args.date)
+        return 0
+
+    if args.cmd == "update-diversity":
+        cmd_update_diversity(runtime_root, args.text_file)
         return 0
 
     raise ValueError(f"Unsupported command: {args.cmd}")

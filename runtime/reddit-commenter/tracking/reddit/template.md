@@ -7,6 +7,15 @@
 - Session: morning or afternoon
 - Session Target: 0
 - Session Completed: 0
+- Health Status: green
+
+## Trend Check (session start)
+
+- Today's comments so far: 0
+- 7-day avg upvotes: -
+- Health: -
+- Errors (24h): -
+- Best subreddit: -
 
 ## Activity Status by Subreddit
 
@@ -38,14 +47,25 @@ Use this record for each attempt:
 
 ### [HH:MM] r/subreddit
 - Status: posted or skipped
-- Post URL: 
-- Post Summary: 
-- Final Comment Text: 
-- Comment URL: 
-- Quality Score: 
+- Post URL:
+- Post Summary:
+- Engagement Potential Score:
+- Thread Digest: (topics covered, gaps found)
+- Final Comment Text:
+- Comment URL:
+- Quality Score:
+- Novelty Score:
+- Diversity Bonus:
 - Gate Mode: approval or auto
-- Result Reason: 
+- Result Reason:
+- Style Retry: no or yes (with fix details)
+- Error: none or (classified error type and action)
+
+## 24h Performance (from previous comments)
+
+| Comment URL | Subreddit | Upvotes | Replies | Visible |
+|---|---|---:|---:|---|
 
 ## Session Stop Reason
 
-- target_reached or no_suitable_posts or rate_limited or outside_window or user_stopped
+- target_reached or no_suitable_posts or rate_limited or outside_window or user_stopped or health_red or error_end_session

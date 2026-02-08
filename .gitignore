@@ -22,7 +22,16 @@ ENV/
 runtime/reddit-commenter/state/daily_state.json
 runtime/reddit-commenter/state/ramp_state.json
 runtime/reddit-commenter/state/session.lock
+runtime/reddit-commenter/state/feedback_history.json
+runtime/reddit-commenter/state/health_state.json
+runtime/reddit-commenter/state/error_log.json
+runtime/reddit-commenter/state/diversity_state.json
+runtime/reddit-commenter/state/subreddit_profiles.json
+runtime/reddit-commenter/state/activity_observations.json
 
 # Runtime tracking logs (generated)
 runtime/reddit-commenter/tracking/reddit/*.md
 !runtime/reddit-commenter/tracking/reddit/template.md
+
+# Analytics reports (generated)
+runtime/reddit-commenter/tracking/reddit/analytics/

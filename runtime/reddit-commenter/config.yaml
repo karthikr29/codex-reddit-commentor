@@ -24,3 +24,17 @@ promotion_policy: none
 approval_ramp_days: 0
 approval_timeout_minutes: 2
 approval_timeout_action: skip_and_continue
+
+# Health monitoring
+health_check_enabled: true
+health_invisible_threshold: 3
+
+# Error handling
+error_handling:
+  progressive_backoff: true
+  max_session_errors: 10
+
+# Analytics
+analytics:
+  trend_check_on_start: true
+  weekly_report_day: SU
