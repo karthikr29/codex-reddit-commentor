@@ -22,7 +22,7 @@
 | r/SideProject | 10 | Builder stories and product lessons |
 | r/Obsidian | 10 | PKM workflows and integrations |
 
-Global daily cap: 70 comments/day (from runtime config).
+Global daily cap: 100 comments/day (from runtime config).
 
 ## Selection Focus
 

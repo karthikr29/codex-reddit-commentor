@@ -170,8 +170,8 @@ All scripts run standalone with `--help`:
 # Check style compliance
 python3 scripts/style_guard.py --text "Looks good. I'd try adding jitter to your retries." --suggest-fix
 
-# Check remaining quota
-python3 scripts/state_manager.py --runtime-root ../../runtime/reddit-commenter remaining --daily-cap 70 --session-cap 235
+# Check remaining quota (session target from config, e.g. 28 for 04:30 session)
+python3 scripts/state_manager.py --runtime-root ../../runtime/reddit-commenter remaining --daily-cap 100 --session-target 28
 
 # Score test candidates
 python3 scripts/score_candidates.py --input test_input.json --thread-digest digest.json
@@ -191,15 +191,42 @@ All runtime config lives in `runtime/reddit-commenter/config.yaml`:
 |-----|---------|-------------|
 | `timezone` | `Asia/Kolkata` | Timezone for scheduling |
 | `mode` | `scheduled_auto_run` | Execution mode |
-| `daily_cap` | `70` | Max comments per day |
-| `session_cap` | `235` | Max comments per session |
-| `sessions` | `04:30, 08:30, 13:30, 18:00` | Scheduled session times (IST) |
+| `daily_cap` | `100` | Max comments per day |
+| `sessions` | See below | Scheduled sessions with per-session targets (IST) |
 | `active_window` | `04:00-19:00` | Posting allowed only in this window |
 | `gap_minutes_random` | `5-10` | Random delay between posts |
 | `promotion_policy` | `none` | Self-promotion disabled |
 | `health_check_enabled` | `true` | Shadow ban detection on/off |
 | `health_invisible_threshold` | `3` | Consecutive invisible comments before red status |
 | `error_handling.progressive_backoff` | `true` | Smart error recovery |
+
+### Per-Session Targets
+
+Each session has a `time` and `target` (max comments). Targets are proportional to session duration and sum to `daily_cap`:
+
+| Session | Window | Duration | Target |
+|---------|--------|----------|--------|
+| 04:30 | 04:30 - 08:30 | 240 min | 28 |
+| 08:30 | 08:30 - 13:30 | 300 min | 34 |
+| 13:30 | 13:30 - 18:00 | 270 min | 30 |
+| 18:00 | 18:00 - 19:00 | 60 min | 8 |
+
+With a 5-10 minute random gap (avg 7.5 min), the realistic daily maximum is ~116 comments. The daily cap of 100 sits comfortably within this range.
+
+### Codex Automations Setup
+
+Codex automations live in `~/.codex/automations/<id>/automation.toml` and their run state (next/last run time) is stored in `~/.codex/sqlite/codex-dev.db`.
+
+To run the 4 daily sessions automatically, ensure you have **four ACTIVE automations** scheduled for (IST):
+
+| Automation ID | Time |
+|--------------|------|
+| `reddit-commenter-safe-early-morning` | 04:30 |
+| `reddit-commenter-safe-morning` | 08:30 |
+| `reddit-commenter-safe-afternoon` | 13:30 |
+| `reddit-commenter-safe-evening` | 18:00 |
+
+Keep these schedules in sync with the `sessions` list in `runtime/reddit-commenter/config.yaml`.
 
 ## Target Subreddits
 

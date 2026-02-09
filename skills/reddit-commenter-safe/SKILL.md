@@ -19,7 +19,7 @@ Run high-quality Reddit commenting sessions with strong controls for account saf
 
 Use this skill for:
 
-1. Scheduled session runs (morning or afternoon)
+1. Scheduled session runs (04:30 / 08:30 / 13:30 / 18:00 IST)
 2. Manual runs that must obey the same limits and safety checks
 3. Draft-only review runs before posting
 
@@ -28,11 +28,14 @@ Use this skill for:
 ### Step 0: Session Initialization
 
 1. Load config from `references/config.md` and runtime `config.yaml`.
-2. Acquire session lock with `scripts/state_manager.py acquire-lock`.
-3. Confirm active window and run-day eligibility from `references/scheduling.md`.
-4. Confirm login state. Never ask for Reddit email or password.
-5. Initialize or load daily state.
-6. Compute session target: `min(session_cap, daily_cap - total_comments)`.
+2. Determine the session slot (`04:30`, `08:30`, `13:30`, `18:00` IST).
+   - Scheduled automation run: the slot is the automation's scheduled time and is authoritative.
+   - Manual run: proceed only if current local time is inside one of the slot windows in `references/scheduling.md`. If not inside any slot window, **STOP** to avoid blocking the next scheduled automation via the lock.
+3. Acquire session lock with `scripts/state_manager.py acquire-lock --session "<slot>"`.
+4. Confirm active window, slot window, and run-day eligibility from `references/scheduling.md`.
+5. Confirm login state. Never ask for Reddit email or password.
+6. Initialize or load daily state.
+7. Look up the current session's `target` from config (sessions are objects with `time` and `target` fields). Compute session target: `min(session_target, daily_cap - total_comments)`.
 
 ### Step 0.5: Analytics Trend Check
 
@@ -114,10 +117,11 @@ Stop session when any condition holds:
 1. Session target reached.
 2. Daily cap reached.
 3. Current time leaves active window.
-4. Error classifier recommends END_SESSION.
-5. No suitable posts remain.
-6. User explicitly stops run.
-7. Health status turns red during session.
+4. Current time leaves the current session slot window (see `references/scheduling.md`).
+5. Error classifier recommends END_SESSION.
+6. No suitable posts remain.
+7. User explicitly stops run.
+8. Health status turns red during session.
 
 ### Step 4: Cleanup
 
@@ -139,7 +143,7 @@ Stop session when any condition holds:
 4. Enforce no em dash and no semicolon in final comments.
 5. Enforce banned AI-phrasing rules in `references/style_rules.md`.
 6. Keep promotion disabled unless policy changes.
-7. Respect time window, per-session cap, and daily cap.
+7. Respect time window, per-session target, and daily cap.
 8. Stop all posting if account health status is red.
 
 ## Scripts

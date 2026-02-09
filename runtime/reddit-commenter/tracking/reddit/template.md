@@ -4,7 +4,7 @@
 
 - Date: YYYY-MM-DD
 - Mode: approval or auto
-- Session: morning or afternoon
+- Session Slot (IST): 04:30 or 08:30 or 13:30 or 18:00
 - Session Target: 0
 - Session Completed: 0
 - Health Status: green
@@ -21,25 +21,25 @@
 
 | Subreddit | Today's Comments | Daily Limit | Last Comment Time |
 |---|---:|---:|---|
-| r/Entrepreneur | 0 | 3 | - |
-| r/Entrepreneurship | 0 | 3 | - |
-| r/Entrepreneurial | 0 | 3 | - |
-| r/Entrepreneurs | 0 | 3 | - |
-| r/EntrepreneurRideAlong | 0 | 3 | - |
-| r/sideprojects | 0 | 3 | - |
-| r/ai | 0 | 3 | - |
-| r/ChatGPT | 0 | 3 | - |
-| r/Claude | 0 | 3 | - |
-| r/Cursor | 0 | 3 | - |
-| r/WebDev | 0 | 3 | - |
-| r/ClaudeAI | 0 | 3 | - |
-| r/LocalLLaMA | 0 | 3 | - |
-| r/AI_Testing | 0 | 3 | - |
-| r/AIToolTesting | 0 | 3 | - |
-| r/artificial | 0 | 3 | - |
-| r/Obsidian | 0 | 3 | - |
-| r/Rag | 0 | 3 | - |
-| r/SideProject | 0 | 3 | - |
+| r/Entrepreneur | 0 | 10 | - |
+| r/Entrepreneurship | 0 | 10 | - |
+| r/Entrepreneurial | 0 | 10 | - |
+| r/Entrepreneurs | 0 | 10 | - |
+| r/EntrepreneurRideAlong | 0 | 10 | - |
+| r/sideprojects | 0 | 10 | - |
+| r/ai | 0 | 10 | - |
+| r/ChatGPT | 0 | 10 | - |
+| r/Claude | 0 | 10 | - |
+| r/Cursor | 0 | 10 | - |
+| r/WebDev | 0 | 10 | - |
+| r/ClaudeAI | 0 | 10 | - |
+| r/LocalLLaMA | 0 | 10 | - |
+| r/AI_Testing | 0 | 10 | - |
+| r/AIToolTesting | 0 | 10 | - |
+| r/artificial | 0 | 10 | - |
+| r/Obsidian | 0 | 10 | - |
+| r/Rag | 0 | 10 | - |
+| r/SideProject | 0 | 10 | - |
 
 ## Activity Log
 

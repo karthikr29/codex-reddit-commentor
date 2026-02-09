@@ -13,7 +13,7 @@ This folder stores runtime config, personalization profile, tracking logs, and s
 
 ## Safety Defaults
 
-1. Daily cap 70
-2. Session cap 235
+1. Daily cap 100
+2. Per-session targets: 28, 34, 30, 8 (proportional to session duration)
 3. Promotion disabled
 4. Approval disabled (always auto mode)

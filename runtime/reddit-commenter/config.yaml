@@ -1,12 +1,15 @@
 timezone: Asia/Kolkata
 mode: scheduled_auto_run
-daily_cap: 70
-session_cap: 235
+daily_cap: 100
 sessions:
-  - "04:30"
-  - "08:30"
-  - "13:30"
-  - "18:00"
+  - time: "04:30"
+    target: 28
+  - time: "08:30"
+    target: 34
+  - time: "13:30"
+    target: 30
+  - time: "18:00"
+    target: 8
 days:
   - MO
   - TU
