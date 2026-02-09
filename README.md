@@ -193,7 +193,7 @@ All runtime config lives in `runtime/reddit-commenter/config.yaml`:
 | `daily_cap` | `100` | Max comments per day |
 | `sessions` | See below | Scheduled sessions with per-session targets (IST) |
 | `active_window` | `04:00-19:00` | Posting allowed only in this window |
-| `gap_minutes_random` | `5-10` | Random delay between posts |
+| `gap_minutes_random` | `1-3` | Random delay between posts |
 | `promotion_policy` | `none` | Self-promotion disabled |
 | `health_check_enabled` | `true` | Shadow ban detection on/off |
 | `health_invisible_threshold` | `3` | Consecutive invisible comments before red status |
@@ -210,7 +210,7 @@ Each session has a `time` and `target` (max comments). Targets are proportional 
 | 13:30 | 13:30 - 18:00 | 270 min | 30 |
 | 18:00 | 18:00 - 19:00 | 60 min | 8 |
 
-With a 5-10 minute random gap (avg 7.5 min), the realistic daily maximum is ~116 comments. The daily cap of 100 sits comfortably within this range.
+With a 1-3 minute random gap (avg 2.0 min), the realistic daily maximum is ~500 comments. The daily cap of 100 sits comfortably within this range.
 
 ### Codex Automations Setup
 
@@ -254,7 +254,7 @@ Keep these schedules in sync with the `sessions` list in `runtime/reddit-comment
 3. **No duplicates** -- Tracks commented URLs to prevent repeat posts
 4. **Hard style blocks** -- Em dash, semicolon, and 47 banned AI phrases are instant failures
 5. **Promotion disabled** -- No self-promo language while `promotion_policy: none`
-6. **Rate limiting** -- Random 5-10 min delays, progressive backoff on errors
+6. **Rate limiting** -- Random 1-3 min delays, progressive backoff on errors
 7. **Session lock** -- Prevents concurrent sessions from overlapping
 
 ### Account Health Monitoring

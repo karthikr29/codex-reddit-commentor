@@ -1,18 +1,37 @@
 # Migration Plan: Reddit Commenter for Gemini CLI
 
-This plan outlines the steps to create a "Reddit Commenter Gemini" skill that is functionally identical to the existing "Reddit Commenter Safe" Codex skill, but adapted for the Gemini CLI environment and toolset.
+> **Update (2026-02-09):** Migration now uses **Playwright MCP** instead of Chrome DevTools / Gemini native browser tools. Chrome DevTools MCP was unreliable (click, scroll broken). Playwright MCP is configured at project level in `.gemini/settings.json`.
+
+This plan outlines the steps to create a "Reddit Commenter Gemini" skill that is functionally identical to the existing "Reddit Commenter Safe" Codex skill, but adapted for the Gemini CLI environment.
 
 ## Objective
 Create a `skills/reddit-commenter-gemini` skill that:
-1.  Uses Gemini CLI native tools (`navigate_page`, `take_snapshot`, `click`, etc.) instead of Playwright MCP.
+1.  Uses Playwright MCP tools (`browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, etc.) for browser automation.
 2.  Adheres to the official Gemini Skill structure (`SKILL.md`, `scripts/`, `references/`).
 3.  Reuses the existing Python logic scripts (which are tool-agnostic).
 4.  Shares the existing `runtime/` configuration and state (to allow interchangeable usage).
+
+## Browser Tool Mapping
+
+Both Codex and Gemini editions now use Playwright MCP. The tool names are identical:
+
+| Action | Playwright MCP Tool |
+|--------|-------------------|
+| Navigate to URL | `browser_navigate(url=...)` |
+| Capture page content | `browser_snapshot()` |
+| Click element | `browser_click(ref="...", element="...")` |
+| Type text | `browser_type(ref="...", text="...")` |
+| Wait for content | `browser_wait_for(text="...")` |
+| Press key | `browser_press_key(key="...")` |
+| Take screenshot | `browser_take_screenshot(type="png")` |
+
+**Note:** `ref` values come from `browser_snapshot()` output. Always snapshot before clicking or typing.
 
 ## Prerequisites
 -   **Source:** `skills/reddit-commenter-safe/`
 -   **Target:** `skills/reddit-commenter-gemini/`
 -   **Runtime:** `runtime/reddit-commenter/` (Shared)
+-   **MCP Config:** `.gemini/settings.json` (Playwright MCP configured)
 
 ## Step-by-Step Implementation
 
@@ -27,24 +46,16 @@ Copy the logic and reference files from the safe version. These files are pure P
 -   **References:** Copy `skills/reddit-commenter-safe/references/*.md` to `skills/reddit-commenter-gemini/references/`.
 
 ### 3. Rewrite `SKILL.md`
-This is the core task. I will rewrite the instructions to map Codex/MCP actions to Gemini native actions.
-
-| Codex/MCP Instruction | Gemini Native Instruction |
-|-----------------------|---------------------------|
-| "Use Playwright MCP to navigate to..." | "Use `navigate_page` to go to..." |
-| "Snapshot the page..." | "Use `take_snapshot` to read the page content..." |
-| "Click..." | "Use `click` on the element..." |
-| "Run `scripts/xyz.py`..." | "Run `run_shell_command` with `python3 skills/reddit-commenter-gemini/scripts/xyz.py`..." |
-| "Acquire lock" | Same (Python script call) |
+This is the core task. The SKILL.md uses Playwright MCP tool names directly since both Codex and Gemini now share the same browser automation layer.
 
 **Key Changes in `SKILL.md`:**
--   **Frontmatter:** Update `name` to `reddit-commenter-gemini`. Update `description` to be a concise, single-line trigger.
--   **Workflow:** rewriting Step 1 (Harvest), Step 1.5 (Health), and Step 2 (Candidate Loop) to explicitly name Gemini tools.
--   **Paths:** Ensure script calls reference the *new* location `skills/reddit-commenter-gemini/scripts/` but point to the *shared* `runtime/reddit-commenter` root.
+-   **Frontmatter:** Update `name` to `reddit-commenter-gemini`. Update `description` to reference Playwright MCP.
+-   **Workflow:** All browser interactions use Playwright MCP tools (`browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`).
+-   **Paths:** Script calls reference `skills/reddit-commenter-gemini/scripts/` but point to the shared `runtime/reddit-commenter` root.
 
 ### 4. Verification
 -   **Validation:** Run `validate_skill.cjs` (if possible) or manually verify against the `skill-creator` guidelines.
--   **Dry Run:** I will simulate a "read-through" of the new `SKILL.md` to ensure the logic flows logically with the available tools.
+-   **Dry Run:** Simulate a "read-through" of the new `SKILL.md` to ensure the logic flows logically with Playwright MCP tools.
 
-## Execution
-I will perform these steps immediately.
+## Status
+Migration complete. Both Codex and Gemini editions use Playwright MCP for browser automation.

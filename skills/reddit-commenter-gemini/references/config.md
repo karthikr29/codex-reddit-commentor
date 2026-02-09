@@ -12,8 +12,8 @@ Runtime config file:
 | `daily_cap` | int | `100` |
 | `sessions` | list[object] | See below |
 | `days` | list[string] | `["MO","TU","WE","TH","FR","SA","SU"]` |
-| `active_window` | string | `04:00-19:00` |
-| `gap_minutes_random` | string | `5-10` |
+| `active_window` | string | `04:00-22:00` |
+| `gap_minutes_random` | string | `1-3` |
 | `rate_limit_pause_minutes` | int | `30` |
 | `rate_limit_retry_max` | int | `5` |
 | `batch_enabled` | bool | `false` |
@@ -29,21 +29,21 @@ Each session is an object with `time` (IST) and `target` (max comments for that 
 ```yaml
 sessions:
   - time: "04:30"
-    target: 28
+    target: 23
   - time: "08:30"
-    target: 34
+    target: 29
   - time: "13:30"
-    target: 30
+    target: 26
   - time: "18:00"
-    target: 8
+    target: 22
 ```
 
 | Session | Window | Duration | Target |
 |---------|--------|----------|--------|
-| 04:30 | 04:30 - 08:30 | 240 min | 28 |
-| 08:30 | 08:30 - 13:30 | 300 min | 34 |
-| 13:30 | 13:30 - 18:00 | 270 min | 30 |
-| 18:00 | 18:00 - 19:00 | 60 min | 8 |
+| 04:30 | 04:30 - 08:30 | 240 min | 23 |
+| 08:30 | 08:30 - 13:30 | 300 min | 29 |
+| 13:30 | 13:30 - 18:00 | 270 min | 26 |
+| 18:00 | 18:00 - 22:00 | 240 min | 22 |
 
 ## Interpretation Rules
 

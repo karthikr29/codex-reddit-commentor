@@ -38,7 +38,6 @@
 | r/ProductManagement | 10 | Product strategy and roadmaps |
 | r/digitalnomad | 10 | Remote work and freelancing |
 | r/freelance | 10 | Remote work and freelancing |
-| r/marketing | 10 | Marketing strategy and digital channels |
 | r/digital_marketing | 10 | Marketing strategy and digital channels |
 | r/DigitalMarketing | 10 | Marketing strategy and digital channels |
 | r/DigitalMarketingHack | 10 | Marketing strategy and digital channels |
@@ -47,7 +46,7 @@
 | r/salestechniques | 10 | Sales tactics, B2B, and tech sales |
 | r/techsales | 10 | Sales tactics, B2B, and tech sales |
 
-Global daily cap: 100 comments/day across 44 subreddits (from runtime config).
+Global daily cap: 100 comments/day across 43 subreddits (from runtime config).
 
 ## Selection Focus
 

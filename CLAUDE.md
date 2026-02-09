@@ -54,7 +54,7 @@ The skill (`SKILL.md` is authoritative) runs a multi-step pipeline per session:
 Init → Analytics Check → Harvest Feedback → Health Gate → Candidate Loop → Cleanup
 ```
 
-**Candidate Loop** (core): Select subreddit → Score posts → Analyze thread → Generate 10-12 candidates → Score on 6 dimensions → Style guard validation → Post best → Sleep 5-10 min → Repeat until session target met.
+**Candidate Loop** (core): Select subreddit → Score posts → Analyze thread → Generate 10-12 candidates → Score on 6 dimensions → Style guard validation → Post best → Sleep 1-3 min → Repeat until session target met.
 
 ### Key Scripts and Their Roles
 

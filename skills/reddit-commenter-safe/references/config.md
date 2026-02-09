@@ -13,7 +13,7 @@ Runtime config file:
 | `sessions` | list[object] | See below |
 | `days` | list[string] | `["MO","TU","WE","TH","FR","SA","SU"]` |
 | `active_window` | string | `04:00-19:00` |
-| `gap_minutes_random` | string | `5-10` |
+| `gap_minutes_random` | string | `1-3` |
 | `rate_limit_pause_minutes` | int | `30` |
 | `rate_limit_retry_max` | int | `5` |
 | `batch_enabled` | bool | `false` |

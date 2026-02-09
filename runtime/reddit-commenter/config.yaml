@@ -2,14 +2,14 @@ timezone: Asia/Kolkata
 mode: scheduled_auto_run
 daily_cap: 100
 sessions:
-  - time: "04:30"
-    target: 28
+  - time: "02:30"
+    target: 31
   - time: "08:30"
-    target: 34
+    target: 26
   - time: "13:30"
-    target: 30
+    target: 23
   - time: "18:00"
-    target: 8
+    target: 20
 days:
   - MO
   - TU
@@ -18,8 +18,9 @@ days:
   - FR
   - SA
   - SU
-active_window: "04:00-19:00"
-gap_minutes_random: "5-10"
+# Updated per user request (2026-02-10) to allow the first session to start at 02:30 IST.
+active_window: "02:00-22:00"
+gap_minutes_random: "1-3"
 rate_limit_pause_minutes: 30
 rate_limit_retry_max: 5
 batch_enabled: false

@@ -22,6 +22,7 @@ def _read_runtime_timezone_name(runtime_root: Path) -> str | None:
         if not s or s.startswith("#"):
             continue
         if s.startswith("timezone:"):
+            # yaml scalar: timezone: Asia/Kolkata (optionally quoted)
             val = s.split(":", 1)[1].strip().strip('"').strip("'")
             return val or None
     return None
@@ -87,6 +88,7 @@ def cmd_init_day(runtime_root: Path, day: str | None, force: bool) -> None:
     if not force and paths["daily"].exists():
         existing = read_json(paths["daily"], default_daily_state(day=target_day))
         if existing.get("date") == target_day:
+            # Non-destructive by default: avoid wiping counters mid-day.
             print(json.dumps(existing, ensure_ascii=True, indent=2))
             return
 

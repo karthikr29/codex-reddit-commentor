@@ -37,3 +37,5 @@ runtime/reddit-commenter/tracking/reddit/*.md
 runtime/reddit-commenter/tracking/reddit/analytics/
 GEMINI.md
 .gemini/
+runtime/reddit-commenter/state/tmp/
+posts_scan_2.json
