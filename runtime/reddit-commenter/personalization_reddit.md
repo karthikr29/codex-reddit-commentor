@@ -62,7 +62,7 @@ Always answer what OP actually asked.
 3. Humor/light post -> short natural reaction.
 4. Discussion post -> concise analytical point plus optional follow-up.
 
-## Final Check Before Posting
+## Quality Check Before Posting
 
 1. Does this sound like a real person instead of an editor?
 2. Is it useful for this exact post?

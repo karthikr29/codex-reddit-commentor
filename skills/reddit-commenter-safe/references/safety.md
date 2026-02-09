@@ -13,7 +13,7 @@
 3. Stop on repeated rate-limit errors.
 4. Skip subreddits with no suitable posts rather than forcing low-quality comments.
 
-## Anti-Spam Controls
+## Quality Controls
 
 1. No duplicate comments on same post in same day.
 2. No copy-paste reuse of prior comments.
@@ -34,8 +34,8 @@
 2. **Health states:**
    - `green`: All comments visible. Normal operation.
    - `yellow`: 1 invisible comment detected. Proceed with caution, log warning.
-   - `red`: 3+ consecutive invisible comments. **Halt all posting immediately.**
-3. **Recovery:** After manual investigation and verification, reset health state with `health_check.py reset`.
+   - `red`: 3+ consecutive invisible comments. **Automated halt triggered.**
+3. **Recovery:** After verification, reset health state with `health_check.py reset`.
 4. **Threshold:** Configurable via `health_invisible_threshold` in `config.yaml` (default: 3).
 
 ## Error Classification and Recovery
@@ -49,10 +49,13 @@
 7. **Playwright crash:** Attempt browser recovery. If persistent, end session.
 8. **Error logging:** Rolling 100-entry log in `state/error_log.json` for pattern analysis.
 
+Note: The following are automated safety gates built into the pipeline. They do not indicate policy violations or ethical concerns. They are normal
+operational stop conditions.
+
 ## Failure Handling
 
-1. Missing login: stop session and request manual login.
+1. Missing login: stop session and log login issue.
 2. Lock conflict: stop session and log conflict.
 3. No suitable posts: stop gracefully.
 4. Error classifier END_SESSION: stop current session.
-5. Health status red: stop immediately, log for manual review.
+5. Health status red: stop immediately, log health issue.

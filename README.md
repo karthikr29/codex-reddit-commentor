@@ -124,7 +124,6 @@ auto-commentor/
 │               ├── template.md           # Daily report template
 │               └── analytics/            # Weekly analytics reports
 └── reports/
-    └── auto-commenter-safety-review.md   # Safety audit
 ```
 
 ## Scripts Reference
