@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -25,6 +26,71 @@ def write_json(path: Path, payload: Any) -> None:
 
 def observations_path(runtime_root: Path) -> Path:
     return runtime_root / "state" / "activity_observations.json"
+
+
+def subreddits_path(runtime_root: Path) -> Path:
+    return runtime_root / "subreddits.md"
+
+
+def canonical_subreddit(name: str) -> str:
+    sub = name.strip()
+    if not sub:
+        return ""
+    if not sub.lower().startswith("r/"):
+        sub = f"r/{sub}"
+    return sub.lower()
+
+
+def load_configured_subreddits(runtime_root: Path) -> list[str]:
+    """Load target subreddit display names from runtime subreddits.md."""
+    path = subreddits_path(runtime_root)
+    if not path.exists():
+        return []
+
+    pattern = re.compile(r"\|\s*(r\/[^|]+?)\s*\|")
+    display_by_canonical: dict[str, str] = {}
+    ordered: list[str] = []
+
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = pattern.search(line)
+        if not match:
+            continue
+        display = match.group(1).strip()
+        key = canonical_subreddit(display)
+        if not key or key in display_by_canonical:
+            continue
+        display_by_canonical[key] = display
+        ordered.append(key)
+
+    return [display_by_canonical[key] for key in ordered]
+
+
+def build_ranked_list(
+    configured: list[str],
+    observed_scores: dict[str, float],
+    observed_display: dict[str, str],
+) -> list[dict[str, Any]]:
+    """Return full priority list with observed entries first, then unobserved configured."""
+    configured_keys = [canonical_subreddit(sub) for sub in configured if canonical_subreddit(sub)]
+    configured_display = {canonical_subreddit(sub): sub for sub in configured if canonical_subreddit(sub)}
+
+    ranked_observed_keys = sorted(observed_scores.keys(), key=lambda key: observed_scores[key], reverse=True)
+    result: list[dict[str, Any]] = []
+    seen: set[str] = set()
+
+    for key in ranked_observed_keys:
+        display = configured_display.get(key) or observed_display.get(key) or key
+        result.append({"subreddit": display, "activity_score": round(observed_scores[key], 2)})
+        seen.add(key)
+
+    for key in configured_keys:
+        if key in seen:
+            continue
+        display = configured_display[key]
+        result.append({"subreddit": display, "activity_score": 0.0})
+        seen.add(key)
+
+    return result
 
 
 def hour_bucket(hour: int) -> str:
@@ -66,20 +132,30 @@ def cmd_optimize(runtime_root: Path) -> None:
     """Generate subreddit priority ordering per time slot."""
     obs_path = observations_path(runtime_root)
     observations: dict[str, Any] = read_json(obs_path, {})
+    configured_subreddits = load_configured_subreddits(runtime_root)
 
     if not observations:
-        print(json.dumps({"message": "No observations yet.", "priorities": {}}, ensure_ascii=True, indent=2))
+        base_priority = [{"subreddit": sub, "activity_score": 0.0} for sub in configured_subreddits]
+        print(json.dumps({
+            "message": "No observations yet.",
+            "priorities": {},
+            "default_priority": base_priority,
+        }, ensure_ascii=True, indent=2))
         return
 
     # Parse observations into structured data
     # key format: "r/SubName|HH-HH|Day"
-    slot_data: dict[str, dict[str, float]] = {}  # {time_bucket: {subreddit: avg_activity_score}}
+    slot_scores: dict[str, dict[str, list[float]]] = {}  # {time_bucket: {canonical_sub: [scores]}}
+    observed_display: dict[str, str] = {}  # {canonical_sub: display_name}
 
     for key, entry in observations.items():
         parts = key.split("|")
         if len(parts) != 3:
             continue
-        subreddit, time_bucket, _ = parts
+        subreddit_raw, time_bucket, _ = parts
+        subreddit = canonical_subreddit(subreddit_raw)
+        if not subreddit:
+            continue
         count = entry.get("count", 0)
         if count < 1:
             continue
@@ -91,19 +167,15 @@ def cmd_optimize(runtime_root: Path) -> None:
         freshness_factor = max(0.1, 1.0 - (avg_age / 360))
         activity_score = avg_posts * freshness_factor
 
-        slot_data.setdefault(time_bucket, {})
-        existing = slot_data[time_bucket].get(subreddit, 0.0)
-        # Average across days of week
-        slot_data[time_bucket][subreddit] = (existing + activity_score) / 2 if existing else activity_score
+        slot_scores.setdefault(time_bucket, {})
+        slot_scores[time_bucket].setdefault(subreddit, []).append(activity_score)
+        observed_display.setdefault(subreddit, subreddit_raw)
 
     # Generate priority ordering per slot
     priorities: dict[str, list[dict[str, Any]]] = {}
-    for time_bucket, subs in sorted(slot_data.items()):
-        ranked = sorted(subs.items(), key=lambda x: x[1], reverse=True)
-        priorities[time_bucket] = [
-            {"subreddit": sub, "activity_score": round(score, 2)}
-            for sub, score in ranked
-        ]
+    for time_bucket, subs in sorted(slot_scores.items()):
+        avg_scores = {sub: (sum(scores) / len(scores)) for sub, scores in subs.items()}
+        priorities[time_bucket] = build_ranked_list(configured_subreddits, avg_scores, observed_display)
 
     result = {
         "total_observations": len(observations),
@@ -117,6 +189,7 @@ def cmd_suggest(runtime_root: Path, current_hour: int | None) -> None:
     """Suggest subreddit ordering for the current time slot."""
     obs_path = observations_path(runtime_root)
     observations: dict[str, Any] = read_json(obs_path, {})
+    configured_subreddits = load_configured_subreddits(runtime_root)
 
     if current_hour is None:
         current_hour = datetime.now(timezone.utc).hour
@@ -125,12 +198,16 @@ def cmd_suggest(runtime_root: Path, current_hour: int | None) -> None:
 
     # Find all observations for this time bucket
     sub_scores: dict[str, list[float]] = {}
+    observed_display: dict[str, str] = {}
     for key, entry in observations.items():
         parts = key.split("|")
         if len(parts) != 3:
             continue
-        subreddit, time_bucket, _ = parts
+        subreddit_raw, time_bucket, _ = parts
         if time_bucket != bucket:
+            continue
+        subreddit = canonical_subreddit(subreddit_raw)
+        if not subreddit:
             continue
 
         count = entry.get("count", 0)
@@ -143,14 +220,15 @@ def cmd_suggest(runtime_root: Path, current_hour: int | None) -> None:
         activity_score = avg_posts * freshness_factor
 
         sub_scores.setdefault(subreddit, []).append(activity_score)
+        observed_display.setdefault(subreddit, subreddit_raw)
 
     # Average scores
     avg_scores = {sub: sum(scores) / len(scores) for sub, scores in sub_scores.items()}
-    ranked = sorted(avg_scores.items(), key=lambda x: x[1], reverse=True)
+    ranked = build_ranked_list(configured_subreddits, avg_scores, observed_display)
 
     result = {
         "time_bucket": bucket,
-        "suggestion": [{"subreddit": sub, "activity_score": round(score, 2)} for sub, score in ranked],
+        "suggestion": ranked,
     }
     print(json.dumps(result, ensure_ascii=True, indent=2))
 

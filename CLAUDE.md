@@ -88,7 +88,7 @@ All state is JSON. Rolling limits apply (e.g., 500 max feedback entries). Script
 - Daily cap of 100 comments, active window 04:00-19:00 IST
 - Health monitoring and progressive error backoff enabled
 
-`runtime/reddit-commenter/subreddits.md` lists 19 target subreddits (entrepreneurship + AI/tech) with 10-comment per-subreddit daily caps.
+`runtime/reddit-commenter/subreddits.md` lists 44 target subreddits (entrepreneurship + AI/tech) with 10-comment per-subreddit daily caps.
 
 `runtime/reddit-commenter/personalization_reddit.md` defines voice/tone rules (no em dash, no semicolon, casual tone, no fake claims).
 

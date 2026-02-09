@@ -40,6 +40,31 @@
 | r/Obsidian | 0 | 10 | - |
 | r/Rag | 0 | 10 | - |
 | r/SideProject | 0 | 10 | - |
+| r/startups | 0 | 10 | - |
+| r/Startup_Ideas | 0 | 10 | - |
+| r/startup | 0 | 10 | - |
+| r/smallbusiness | 0 | 10 | - |
+| r/microsaas | 0 | 10 | - |
+| r/SaaS | 0 | 10 | - |
+| r/micro_saas | 0 | 10 | - |
+| r/indiehackers | 0 | 10 | - |
+| r/MachineLearning | 0 | 10 | - |
+| r/learnmachinelearning | 0 | 10 | - |
+| r/LangChain | 0 | 10 | - |
+| r/learnprogramming | 0 | 10 | - |
+| r/growthHacking | 0 | 10 | - |
+| r/cscareerquestions | 0 | 10 | - |
+| r/ProductManagement | 0 | 10 | - |
+| r/digitalnomad | 0 | 10 | - |
+| r/freelance | 0 | 10 | - |
+| r/marketing | 0 | 10 | - |
+| r/digital_marketing | 0 | 10 | - |
+| r/DigitalMarketing | 0 | 10 | - |
+| r/DigitalMarketingHack | 0 | 10 | - |
+| r/sales | 0 | 10 | - |
+| r/Sales_Professionals | 0 | 10 | - |
+| r/salestechniques | 0 | 10 | - |
+| r/techsales | 0 | 10 | - |
 
 ## Activity Log
 

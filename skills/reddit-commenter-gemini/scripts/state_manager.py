@@ -9,9 +9,35 @@ import os
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 
-def today_iso() -> str:
+def _read_runtime_timezone_name(runtime_root: Path) -> str | None:
+    """Best-effort parse of runtime config.yaml for `timezone: <IANA>`."""
+    cfg = runtime_root / "config.yaml"
+    if not cfg.exists():
+        return None
+    for line in cfg.read_text(encoding="utf-8").splitlines():
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        if s.startswith("timezone:"):
+            val = s.split(":", 1)[1].strip().strip('"').strip("'")
+            return val or None
+    return None
+
+
+def today_iso(runtime_root: Path) -> str:
+    """
+    Return today's date in the runtime-configured timezone (defaults to local date
+    if config is missing or invalid).
+    """
+    tz_name = _read_runtime_timezone_name(runtime_root)
+    if tz_name:
+        try:
+            return datetime.now(ZoneInfo(tz_name)).date().isoformat()
+        except Exception:
+            pass
     return date.today().isoformat()
 
 
@@ -54,9 +80,17 @@ def default_ramp_state() -> dict[str, Any]:
     }
 
 
-def cmd_init_day(runtime_root: Path, day: str | None) -> None:
+def cmd_init_day(runtime_root: Path, day: str | None, force: bool) -> None:
     paths = state_paths(runtime_root)
-    state = default_daily_state(day=day)
+    target_day = day or today_iso(runtime_root)
+
+    if not force and paths["daily"].exists():
+        existing = read_json(paths["daily"], default_daily_state(day=target_day))
+        if existing.get("date") == target_day:
+            print(json.dumps(existing, ensure_ascii=True, indent=2))
+            return
+
+    state = default_daily_state(day=target_day)
     write_json(paths["daily"], state)
     print(json.dumps(state, ensure_ascii=True, indent=2))
 
@@ -85,17 +119,18 @@ def cmd_release_lock(runtime_root: Path) -> None:
     print("released")
 
 
-def load_daily(paths: dict[str, Path]) -> dict[str, Any]:
-    state = read_json(paths["daily"], default_daily_state())
-    if state.get("date") != today_iso():
-        state = default_daily_state(day=today_iso())
+def load_daily(runtime_root: Path, paths: dict[str, Path]) -> dict[str, Any]:
+    today = today_iso(runtime_root)
+    state = read_json(paths["daily"], default_daily_state(day=today))
+    if state.get("date") != today:
+        state = default_daily_state(day=today)
         write_json(paths["daily"], state)
     return state
 
 
 def cmd_update_count(runtime_root: Path, subreddit: str, increment: int, post_url: str | None) -> None:
     paths = state_paths(runtime_root)
-    state = load_daily(paths)
+    state = load_daily(runtime_root, paths)
 
     per_sub = state.setdefault("per_subreddit", {})
     per_sub[subreddit] = int(per_sub.get(subreddit, 0)) + increment
@@ -112,7 +147,7 @@ def cmd_update_count(runtime_root: Path, subreddit: str, increment: int, post_ur
 
 def cmd_remaining(runtime_root: Path, daily_cap: int, session_target: int) -> None:
     paths = state_paths(runtime_root)
-    state = load_daily(paths)
+    state = load_daily(runtime_root, paths)
     remaining_daily = max(0, daily_cap - int(state.get("total_comments", 0)))
     effective_target = min(session_target, remaining_daily)
     result = {
@@ -125,7 +160,7 @@ def cmd_remaining(runtime_root: Path, daily_cap: int, session_target: int) -> No
 
 def cmd_should_skip(runtime_root: Path, post_url: str) -> int:
     paths = state_paths(runtime_root)
-    state = load_daily(paths)
+    state = load_daily(runtime_root, paths)
     urls = set(state.get("commented_post_urls", []))
     should_skip = post_url in urls
     print(json.dumps({"post_url": post_url, "skip": should_skip}, ensure_ascii=True))
@@ -145,7 +180,7 @@ def cmd_gate_mode(runtime_root: Path, check_date: str | None) -> None:
     ramp = read_json(paths["ramp"], default_ramp_state())
     start = ramp.get("ramp_start_date")
     days = int(ramp.get("approval_ramp_days", 7))
-    current = datetime.strptime(check_date or today_iso(), "%Y-%m-%d").date()
+    current = datetime.strptime(check_date or today_iso(runtime_root), "%Y-%m-%d").date()
 
     # If ramp is disabled, always auto regardless of start date presence.
     if days <= 0:
@@ -229,6 +264,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     init_day = sub.add_parser("init-day")
     init_day.add_argument("--date", help="Date in YYYY-MM-DD. Default today.")
+    init_day.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite existing daily_state.json for the target date.",
+    )
 
     acquire = sub.add_parser("acquire-lock")
     acquire.add_argument("--session", required=True, help="Session label.")
@@ -265,7 +305,7 @@ def main() -> int:
     runtime_root.mkdir(parents=True, exist_ok=True)
 
     if args.cmd == "init-day":
-        cmd_init_day(runtime_root, args.date)
+        cmd_init_day(runtime_root, args.date, args.force)
         return 0
     if args.cmd == "acquire-lock":
         return cmd_acquire_lock(runtime_root, args.session)

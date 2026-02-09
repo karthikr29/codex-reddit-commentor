@@ -230,13 +230,21 @@ Keep these schedules in sync with the `sessions` list in `runtime/reddit-comment
 
 ## Target Subreddits
 
-19 subreddits across entrepreneurship and AI/tech communities, each with a 10-comment daily cap:
+44 subreddits across entrepreneurship, AI/tech, and adjacent communities, each with a 10-comment daily cap:
 
 **Entrepreneurship:** r/Entrepreneur, r/Entrepreneurship, r/Entrepreneurial, r/Entrepreneurs, r/EntrepreneurRideAlong
 
 **AI/Tech:** r/ai, r/ChatGPT, r/Claude, r/ClaudeAI, r/Cursor, r/LocalLLaMA, r/AI_Testing, r/AIToolTesting, r/artificial, r/Rag
 
 **Builder:** r/sideprojects, r/SideProject, r/WebDev, r/Obsidian
+
+**Startups/SaaS:** r/startups, r/Startup_Ideas, r/startup, r/smallbusiness, r/SaaS, r/microsaas, r/micro_saas, r/indiehackers
+
+**ML/Learning:** r/MachineLearning, r/learnmachinelearning, r/LangChain, r/learnprogramming
+
+**Sales/Marketing:** r/marketing, r/digital_marketing, r/DigitalMarketing, r/DigitalMarketingHack, r/sales, r/Sales_Professionals, r/salestechniques, r/techsales, r/growthHacking
+
+**Career/Remote:** r/cscareerquestions, r/ProductManagement, r/digitalnomad, r/freelance
 
 ## Safety Model
 

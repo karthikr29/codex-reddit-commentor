@@ -21,8 +21,33 @@
 | r/WebDev | 10 | Technical and practical discussion |
 | r/SideProject | 10 | Builder stories and product lessons |
 | r/Obsidian | 10 | PKM workflows and integrations |
+| r/startups | 10 | Startup and small business strategy |
+| r/Startup_Ideas | 10 | Startup and small business strategy |
+| r/startup | 10 | Startup and small business strategy |
+| r/smallbusiness | 10 | Startup and small business strategy |
+| r/microsaas | 10 | SaaS, indie hacking, bootstrapped products |
+| r/SaaS | 10 | SaaS, indie hacking, bootstrapped products |
+| r/micro_saas | 10 | SaaS, indie hacking, bootstrapped products |
+| r/indiehackers | 10 | SaaS, indie hacking, bootstrapped products |
+| r/MachineLearning | 10 | ML research, learning, and frameworks |
+| r/learnmachinelearning | 10 | ML research, learning, and frameworks |
+| r/LangChain | 10 | ML research, learning, and frameworks |
+| r/learnprogramming | 10 | Teaching and beginner programming help |
+| r/growthHacking | 10 | Growth experiments and tactics |
+| r/cscareerquestions | 10 | Tech career advice and hiring |
+| r/ProductManagement | 10 | Product strategy and roadmaps |
+| r/digitalnomad | 10 | Remote work and freelancing |
+| r/freelance | 10 | Remote work and freelancing |
+| r/marketing | 10 | Marketing strategy and digital channels |
+| r/digital_marketing | 10 | Marketing strategy and digital channels |
+| r/DigitalMarketing | 10 | Marketing strategy and digital channels |
+| r/DigitalMarketingHack | 10 | Marketing strategy and digital channels |
+| r/sales | 10 | Sales tactics, B2B, and tech sales |
+| r/Sales_Professionals | 10 | Sales tactics, B2B, and tech sales |
+| r/salestechniques | 10 | Sales tactics, B2B, and tech sales |
+| r/techsales | 10 | Sales tactics, B2B, and tech sales |
 
-Global daily cap: 100 comments/day (from runtime config).
+Global daily cap: 100 comments/day across 44 subreddits (from runtime config).
 
 ## Selection Focus
 
