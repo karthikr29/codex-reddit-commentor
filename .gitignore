@@ -39,3 +39,19 @@ GEMINI.md
 .gemini/
 runtime/reddit-commenter/state/tmp/
 posts_scan_2.json
+
+# Generated candidate files during execution
+candidates_*.json
+candidates.json
+file.json
+comment1.txt
+guidance.json
+thread_context.json
+thread_comments.json
+thread_digest.json
+last_comment.txt
+snapshot_*.json
+daily_state.json
+activity_observations.json
+page-post.snap
+page-post-5-comments.snap

@@ -87,6 +87,7 @@ Repeat until session target reached or stop condition:
    - Thread digest (covered topics and gap areas) so candidates say something new
    - Diversity guidance (what structural patterns to avoid/prefer)
    - Personalization profile from `personalization_reddit.md`
+   - **CRITICAL STYLE RULE: NEVER use em dashes (—) or en dashes (–) anywhere in the comment. Also never use semicolons (;). Use commas, periods, or regular hyphens (-) instead. These are hard blocks and will cause the comment to be rejected.**
 
 8. **Score candidates.** Run `scripts/score_candidates.py --input <temp_file>` with optional flags:
    - `--thread-digest <digest_file>` for novelty scoring

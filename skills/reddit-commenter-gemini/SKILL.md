@@ -129,6 +129,7 @@ Repeat until session target is reached:
         - Thread digest (covered topics and gap areas) so candidates say something new
         - Diversity guidance (what structural patterns to avoid/prefer)
         - Personalization profile from `personalization_reddit.md`
+        - **CRITICAL STYLE RULE: NEVER use em dashes (—) or en dashes (–) anywhere in the comment. Also never use semicolons (;). Use commas, periods, or regular hyphens (-) instead. These are hard blocks and will cause the comment to be rejected.**
         - Comment structure variety: Use these 7 opener types across candidates:
           * **question** — Start with "Have you", "Do you", "What if", "Why not"
           * **agreement** — Start with "Yeah", "Agreed", "Same", "Exactly"
