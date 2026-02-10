@@ -229,13 +229,15 @@ Keep these schedules in sync with the `sessions` list in `runtime/reddit-comment
 
 ## Target Subreddits
 
-44 subreddits across entrepreneurship, AI/tech, and adjacent communities, each with a 10-comment daily cap:
+63 subreddits across entrepreneurship, AI/tech, and adjacent communities, each with a 10-comment daily cap:
 
-**Entrepreneurship:** r/Entrepreneur, r/Entrepreneurship, r/Entrepreneurial, r/Entrepreneurs, r/EntrepreneurRideAlong
+**Entrepreneurship:** r/Entrepreneur, r/Entrepreneurship, r/Entrepreneurs, r/EntrepreneurRideAlong
 
-**AI/Tech:** r/ai, r/ChatGPT, r/Claude, r/ClaudeAI, r/Cursor, r/LocalLLaMA, r/AI_Testing, r/AIToolTesting, r/artificial, r/Rag
+**AI/Tech:** r/ChatGPT, r/Claude, r/ClaudeAI, r/Cursor, r/LocalLLaMA, r/AIToolTesting, r/artificial, r/Rag, r/GeminiAI, r/GoogleGeminiAI, r/codex, r/ClaudeCode, r/ChatGPTPro, r/OpenAI
 
-**Builder:** r/sideprojects, r/SideProject, r/WebDev, r/Obsidian
+**Prompting:** r/PromptEngineering, r/aipromptprogramming, r/ChatGPTPromptGenius, r/WritingPrompts
+
+**Builder:** r/sideprojects, r/SideProject, r/WebDev, r/Obsidian, r/SoloDevelopment, r/buildinpublic, r/gamedev
 
 **Startups/SaaS:** r/startups, r/Startup_Ideas, r/startup, r/smallbusiness, r/SaaS, r/microsaas, r/micro_saas, r/indiehackers
 
@@ -243,7 +245,15 @@ Keep these schedules in sync with the `sessions` list in `runtime/reddit-comment
 
 **Sales/Marketing:** r/marketing, r/digital_marketing, r/DigitalMarketing, r/DigitalMarketingHack, r/sales, r/Sales_Professionals, r/salestechniques, r/techsales, r/growthHacking
 
-**Career/Remote:** r/cscareerquestions, r/ProductManagement, r/digitalnomad, r/freelance
+**Cloud:** r/aws, r/AZURE, r/AWSCertifications, r/google_antigravity
+
+**Career/Remote:** r/cscareerquestions, r/ProductManagement, r/freelance, r/developersIndia
+
+**Education:** r/Teachers, r/ApplyingToCollege, r/college
+
+**Relationships:** r/relationship_advice, r/relationships
+
+**General:** r/howto
 
 ## Safety Model
 

@@ -23,18 +23,15 @@
 |---|---:|---:|---|
 | r/Entrepreneur | 0 | 10 | - |
 | r/Entrepreneurship | 0 | 10 | - |
-| r/Entrepreneurial | 0 | 10 | - |
 | r/Entrepreneurs | 0 | 10 | - |
 | r/EntrepreneurRideAlong | 0 | 10 | - |
 | r/sideprojects | 0 | 10 | - |
-| r/ai | 0 | 10 | - |
 | r/ChatGPT | 0 | 10 | - |
 | r/Claude | 0 | 10 | - |
 | r/Cursor | 0 | 10 | - |
 | r/WebDev | 0 | 10 | - |
 | r/ClaudeAI | 0 | 10 | - |
 | r/LocalLLaMA | 0 | 10 | - |
-| r/AI_Testing | 0 | 10 | - |
 | r/AIToolTesting | 0 | 10 | - |
 | r/artificial | 0 | 10 | - |
 | r/Obsidian | 0 | 10 | - |
@@ -55,7 +52,6 @@
 | r/growthHacking | 0 | 10 | - |
 | r/cscareerquestions | 0 | 10 | - |
 | r/ProductManagement | 0 | 10 | - |
-| r/digitalnomad | 0 | 10 | - |
 | r/freelance | 0 | 10 | - |
 | r/marketing | 0 | 10 | - |
 | r/digital_marketing | 0 | 10 | - |
@@ -65,6 +61,30 @@
 | r/Sales_Professionals | 0 | 10 | - |
 | r/salestechniques | 0 | 10 | - |
 | r/techsales | 0 | 10 | - |
+| r/GeminiAI | 0 | 10 | - |
+| r/GoogleGeminiAI | 0 | 10 | - |
+| r/google_antigravity | 0 | 10 | - |
+| r/codex | 0 | 10 | - |
+| r/ClaudeCode | 0 | 10 | - |
+| r/AWSCertifications | 0 | 10 | - |
+| r/aws | 0 | 10 | - |
+| r/AZURE | 0 | 10 | - |
+| r/howto | 0 | 10 | - |
+| r/ChatGPTPro | 0 | 10 | - |
+| r/PromptEngineering | 0 | 10 | - |
+| r/WritingPrompts | 0 | 10 | - |
+| r/aipromptprogramming | 0 | 10 | - |
+| r/ChatGPTPromptGenius | 0 | 10 | - |
+| r/OpenAI | 0 | 10 | - |
+| r/relationship_advice | 0 | 10 | - |
+| r/relationships | 0 | 10 | - |
+| r/developersIndia | 0 | 10 | - |
+| r/SoloDevelopment | 0 | 10 | - |
+| r/buildinpublic | 0 | 10 | - |
+| r/gamedev | 0 | 10 | - |
+| r/Teachers | 0 | 10 | - |
+| r/ApplyingToCollege | 0 | 10 | - |
+| r/college | 0 | 10 | - |
 
 ## Activity Log
 
