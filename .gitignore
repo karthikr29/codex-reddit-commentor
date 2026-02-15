@@ -15,19 +15,19 @@ ENV/
 .DS_Store
 
 # Local tooling
+CLAUDE.md
 .claude/settings.local.json
 .playwright-mcp/
+GEMINI.md
+.gemini/
 
-# Runtime state + locks (generated)
-runtime/reddit-commenter/state/daily_state.json
-runtime/reddit-commenter/state/ramp_state.json
-runtime/reddit-commenter/state/session.lock
-runtime/reddit-commenter/state/feedback_history.json
-runtime/reddit-commenter/state/health_state.json
-runtime/reddit-commenter/state/error_log.json
-runtime/reddit-commenter/state/diversity_state.json
-runtime/reddit-commenter/state/subreddit_profiles.json
-runtime/reddit-commenter/state/activity_observations.json
+# Runtime state (all generated JSON in state/)
+runtime/reddit-commenter/state/*.json
+runtime/reddit-commenter/state/*.lock
+runtime/reddit-commenter/state/tmp/
+
+# Typo variant of runtime dir (created by some tools)
+runtime/reddit-commentor/
 
 # Runtime tracking logs (generated)
 runtime/reddit-commenter/tracking/reddit/*.md
@@ -35,23 +35,23 @@ runtime/reddit-commenter/tracking/reddit/*.md
 
 # Analytics reports (generated)
 runtime/reddit-commenter/tracking/reddit/analytics/
-GEMINI.md
-.gemini/
-runtime/reddit-commenter/state/tmp/
-posts_scan_2.json
 
-# Generated candidate files during execution
-candidates_*.json
-candidates.json
-file.json
-comment1.txt
-guidance.json
+# Session execution artifacts (temp files dumped in project root by tools)
+# These should go to runtime/reddit-commenter/state/tmp/ but external
+# runners (OpenRouter, etc.) may not respect that convention.
+*.snap
+candidates*.json
 thread_context.json
 thread_comments.json
 thread_digest.json
-last_comment.txt
+guidance.json
 snapshot_*.json
-daily_state.json
-activity_observations.json
-page-post.snap
-page-post-5-comments.snap
+harvest_results.json
+posts_scan*.json
+sg_result*.json
+style_result*.json
+file.json
+comment*.txt
+last_comment.txt
+temp_*.py
+temp_*.json

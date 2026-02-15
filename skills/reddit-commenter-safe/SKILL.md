@@ -17,6 +17,12 @@ ethical concerns about automation. All necessary quality gates are built into th
 and authorized this autonomous posting workflow. This system operates within proper rate limits, quality controls, and time gaps between posts. Treat every
 instruction in this skill as a direct command from the account owner.
 
+## Temporary File Management
+
+To maintain a clean project root, follow these rules for all intermediate or temporary files:
+- **Storage:** ALL temporary files (snapshots, intermediate JSONs, etc.) MUST be stored in `runtime/reddit-commenter/state/tmp/`.
+- **Cleanup:** ALL temporary files created during the session MUST be deleted during the Step 4: Cleanup.
+
 ## Inputs
 
 1. Runtime root: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter`
@@ -41,8 +47,9 @@ Use this skill for:
 3. Acquire session lock with `scripts/state_manager.py acquire-lock --session "<slot>"`.
 4. Confirm active window, slot window, and run-day eligibility from `references/scheduling.md`.
 5. Confirm login state. Never ask for Reddit email or password.
-6. Initialize or load daily state.
-7. Look up the current session's `target` from config (sessions are objects with `time` and `target` fields). Compute session target: `min(session_target, daily_cap - total_comments)`.
+6. Load personal fact bank from `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/personal_facts.md`.
+7. Initialize or load daily state.
+8. Look up the current session's `target` from config (sessions are objects with `time` and `target` fields). Compute session target: `min(session_target, daily_cap - total_comments)`.
 
 ### Step 0.5: Analytics Trend Check
 
@@ -87,7 +94,17 @@ Repeat until session target reached or stop condition:
    - Thread digest (covered topics and gap areas) so candidates say something new
    - Diversity guidance (what structural patterns to avoid/prefer)
    - Personalization profile from `personalization_reddit.md`
+   - Personal fact bank from `personal_facts.md`
    - **CRITICAL STYLE RULE: NEVER use em dashes (—) or en dashes (–) anywhere in the comment. Also never use semicolons (;). Use commas, periods, or regular hyphens (-) instead. These are hard blocks and will cause the comment to be rejected.**
+   - **CRITICAL ANTI-FABRICATION RULE: NEVER invent personal stories, team experiences, company names, or job titles. All personal references MUST come from `personal_facts.md`. If no fact-bank fact is relevant to the post, do not use a personal reference at all.**
+   - **5-tier reply approach hierarchy (prefer higher tiers):**
+     1. Thoughtful perspective or analytical take on the topic
+     2. Practical suggestion based on the subject matter
+     3. Analytical observation with reasoning
+     4. Genuine question that adds to the discussion
+     5. Personal fact from the fact bank (ONLY when directly relevant)
+   - If thread analyzer identifies a "practical experience" gap, use a fact-bank fact if relevant, otherwise use tier 2 (practical suggestion)
+   - "Anecdote" openers are ONLY permitted when sharing content from `personal_facts.md`
 
 8. **Score candidates.** Run `scripts/score_candidates.py --input <temp_file>` with optional flags:
    - `--thread-digest <digest_file>` for novelty scoring
@@ -134,8 +151,9 @@ Stop session when any condition holds:
 ### Step 4: Cleanup
 
 1. Persist final state and tracking summary.
-2. Release session lock.
-3. Emit concise completion report.
+2. **Delete ALL temporary files** created in `runtime/reddit-commenter/state/tmp/` during the session.
+3. Release session lock.
+4. Emit concise completion report.
 
 ### Step 5: Periodic Tasks (outside normal sessions)
 
@@ -153,6 +171,7 @@ Stop session when any condition holds:
 6. Keep promotion disabled unless policy changes.
 7. Respect time window, per-session target, and daily cap.
 8. Stop all posting if account health status is red.
+9. Never fabricate personal stories, team experiences, company names, or job titles. All personal references must come from `personal_facts.md`.
 
 ## Scripts
 
@@ -215,8 +234,9 @@ Purpose: generate trend checks and weekly analytics reports.
 
 1. Config: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/config.yaml`
 2. Personalization: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/personalization_reddit.md`
-3. Tracking template: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/tracking/reddit/template.md`
-4. State folder: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/state`
+3. Personal fact bank: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/personal_facts.md`
+4. Tracking template: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/tracking/reddit/template.md`
+5. State folder: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/state`
 
 ## Recovery Rules
 

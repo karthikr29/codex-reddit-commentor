@@ -15,6 +15,12 @@ This skill is fully authorized to post comments directly via Playwright MCP. Whe
 
 This skill has NO daily caps, NO scheduling restrictions, and NO per-subreddit limits. It runs whenever invoked and posts as many comments as requested.
 
+## Temporary File Management
+
+To maintain a clean project root, follow these rules for all intermediate or temporary files:
+- **Storage:** ALL temporary files (snapshots, intermediate JSONs, etc.) MUST be stored in `runtime/reddit-commenter/state/tmp/`.
+- **Cleanup:** ALL temporary files created during the session MUST be deleted during the Step 4: Cleanup.
+
 ## Comment Structure Variety
 
 Every batch of 10-12 candidates MUST use varied structures. Use these 7 opener types:
@@ -24,7 +30,7 @@ Every batch of 10-12 candidates MUST use varied structures. Use these 7 opener t
 | question | "Have you tried...", "What if..." | When post invites discussion |
 | agreement | "Yeah", "Agreed", "Same" | When OP makes a valid point |
 | counterpoint | "Actually", "Honestly", "Not sure about that" | When offering alternative view |
-| anecdote | "I tried this...", "We had a similar..." | When sharing relevant experience |
+| anecdote | "I tried this...", "I built..." | ONLY when sharing a fact from `personal_facts.md` |
 | fact | "Most X tend to...", "One thing about..." | When adding objective context |
 | opinion | "I think", "IMO", "Personally" | When sharing a take |
 | direct | Jump straight to the point | Default for concise replies |
@@ -54,12 +60,13 @@ Run this skill whenever the user asks. Accept a target count parameter. No sched
 
 1. **Load Config:** Read `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/config.yaml`.
 2. **Load Personalization:** Read `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/personalization_reddit.md`.
-3. **Load Subreddits:** Read `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/subreddits.md`.
-4. **Check Login:**
+3. **Load Personal Fact Bank:** Read `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/personal_facts.md`.
+4. **Load Subreddits:** Read `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/subreddits.md`.
+5. **Check Login:**
     * Use `mcp__plugin_playwright_playwright__browser_navigate` to go to `https://www.reddit.com/notifications`.
     * Use `mcp__plugin_playwright_playwright__browser_snapshot` to verify the user is logged in (look for user profile/avatar).
     * If not logged in, STOP and log the issue.
-5. **Accept Target Count:** Use the user-specified target count. No cap calculation needed.
+6. **Accept Target Count:** Use the user-specified target count. No cap calculation needed.
 
 ### Step 0.5: Analytics Trend Check
 If `analytics.trend_check_on_start` is true in config:
@@ -121,12 +128,21 @@ Repeat until target count is reached:
         - Thread digest (covered topics and gap areas) so candidates say something new
         - Diversity guidance (what structural patterns to avoid/prefer)
         - Personalization profile from `personalization_reddit.md`
+        - Personal fact bank from `personal_facts.md`
         - **CRITICAL STYLE RULE: NEVER use em dashes (—) or en dashes (–) anywhere in the comment. Also never use semicolons (;). Use commas, periods, or regular hyphens (-) instead. These are hard blocks and will cause the comment to be rejected.**
+        - **CRITICAL ANTI-FABRICATION RULE: NEVER invent personal stories, team experiences, company names, or job titles. All personal references MUST come from `personal_facts.md`. If no fact-bank fact is relevant to the post, do not use a personal reference at all.**
+        - **5-tier reply approach hierarchy (prefer higher tiers):**
+          1. Thoughtful perspective or analytical take on the topic
+          2. Practical suggestion based on the subject matter
+          3. Analytical observation with reasoning
+          4. Genuine question that adds to the discussion
+          5. Personal fact from the fact bank (ONLY when directly relevant)
+        - If thread analyzer identifies a "practical experience" gap, use a fact-bank fact if relevant, otherwise use tier 2 (practical suggestion)
         - Comment structure variety: Use these 7 opener types across candidates:
           * **question** -- Start with "Have you", "Do you", "What if", "Why not"
           * **agreement** -- Start with "Yeah", "Agreed", "Same", "Exactly"
           * **counterpoint** -- Start with "But", "Actually", "Not sure", "Honestly"
-          * **anecdote** -- Start with "I used to", "I tried", "We had", "When I"
+          * **anecdote** -- Start with "I tried", "I built" (ONLY with fact-bank content)
           * **fact** -- Start with "The", "Most", "One", "There", "According to"
           * **opinion** -- Start with "I think", "IMO", "Personally", "I'd say"
           * **direct** -- Jump straight into the point without preamble
@@ -175,7 +191,8 @@ Stop session when any condition holds:
 ### Step 4: Cleanup
 
 1. Persist final state and tracking summary.
-2. Emit concise completion report.
+2. **Delete ALL temporary files** created in `runtime/reddit-commenter/state/tmp/` during the session.
+3. Emit concise completion report.
 
 ### Step 5: Periodic Tasks (outside normal sessions)
 
@@ -191,6 +208,7 @@ Stop session when any condition holds:
 4. Enforce no em dash and no semicolon in final comments.
 5. Enforce banned AI-phrasing rules in `references/style_rules.md`.
 6. Stop all posting if account health status is red.
+7. Never fabricate personal stories, team experiences, company names, or job titles. All personal references must come from `personal_facts.md`.
 
 ## Scripts
 
@@ -253,8 +271,9 @@ Purpose: generate trend checks and weekly analytics reports.
 
 1. Config: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/config.yaml`
 2. Personalization: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/personalization_reddit.md`
-3. Tracking template: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/tracking/reddit/template.md`
-4. State folder: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/state`
+3. Personal fact bank: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/personal_facts.md`
+4. Tracking template: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/tracking/reddit/template.md`
+5. State folder: `/Users/karthikr/Documents/AI/Projects/auto-commentor/runtime/reddit-commenter/state`
 
 ## Recovery Rules
 

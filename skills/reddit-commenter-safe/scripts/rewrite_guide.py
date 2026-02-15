@@ -13,6 +13,7 @@ REWRITE_MAP: dict[str, str] = {
     "no_em_dash": "Replace all em dashes (\u2014) with commas, periods, or short dashes (-).",
     "no_semicolon": "Split semicolon-joined clauses into two separate sentences.",
     "promo_blocked": "Remove all promotional language. Rewrite as genuinely helpful advice with no sales intent.",
+    "fabrication_blocked": "Remove the fabricated personal claim entirely. Do not invent job titles, company names, team experiences, or personal stories. Instead, rewrite using one of these approaches: (1) a factual observation about the topic, (2) a practical suggestion, (3) an analytical take, or (4) a genuine opinion. Only reference personal experience if it comes from the personal_facts.md fact bank.",
 }
 
 # Alternative phrasing for common banned phrases

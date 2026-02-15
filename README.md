@@ -75,6 +75,45 @@ Load runtime config from runtime/reddit-commenter/config.yaml,
 enforce all safety and style guardrails.
 ```
 
+## How to Use This Project
+
+1. **Set up your personal fact bank** -- Edit `runtime/reddit-commenter/personal_facts.md` with YOUR real facts (what you've built, your opinions, your background). This is the single source of truth for all personal references in generated comments.
+2. **Customize voice/style** -- Edit `runtime/reddit-commenter/personalization_reddit.md` to match your preferred tone and language.
+3. **Configure subreddits** -- Edit `runtime/reddit-commenter/subreddits.md` to add or remove target subreddits.
+4. **Set session schedule** -- Edit `runtime/reddit-commenter/config.yaml` for session times, daily caps, and gap settings.
+5. **Log in to Reddit** -- Open the Playwright browser and manually log in to your Reddit account. The skill never stores credentials.
+6. **Run the skill** -- Invoke from Codex CLI: `Use $reddit-commenter-safe to run a safety-checked Reddit comment session.`
+
+## Personalization
+
+### Personal Fact Bank (`personal_facts.md`)
+
+The fact bank prevents the AI from fabricating personal stories. It contains:
+- **Who you are** -- Your background, interests, and builder identity
+- **What you've built** -- Real projects, results, and accomplishments
+- **Opinions you hold** -- Genuine takes and beliefs
+- **Hard NEVER rules** -- What the AI must never invent
+
+When generating comments, the AI uses a 5-tier reply approach:
+1. Thoughtful perspective or analytical take
+2. Practical suggestion
+3. Analytical observation with reasoning
+4. Genuine question
+5. Personal fact from the bank (only when directly relevant)
+
+To add new facts (e.g., a new project or accomplishment), simply edit `personal_facts.md`.
+
+### Voice & Style (`personalization_reddit.md`)
+
+Controls tone, language preferences, and anti-fabrication rules. The AI is configured to sound like a helpful peer, not a lecturer.
+
+### Anti-Fabrication System
+
+Three layers prevent fabricated personal claims:
+1. **Fact bank** -- `personal_facts.md` is the only source of personal references
+2. **Style guard detection** -- `style_guard.py` catches 17 fabrication patterns (e.g., "we had", "my team", "at my company") and blocks them
+3. **5-tier reply hierarchy** -- Instructions prioritize analytical/practical responses over personal anecdotes
+
 ## Project Structure
 
 ```
@@ -108,6 +147,7 @@ auto-commentor/
 │   └── reddit-commenter/
 │       ├── config.yaml                   # Master runtime configuration
 │       ├── personalization_reddit.md     # Voice & tone profile
+│       ├── personal_facts.md            # Personal fact bank (anti-fabrication)
 │       ├── subreddits.md                 # Target subreddits & caps
 │       ├── prompts/
 │       │   └── automation_prompt.md      # Codex invocation prompt
@@ -134,7 +174,7 @@ auto-commentor/
 |--------|---------|-------------|
 | `state_manager.py` | Manage daily state, session lock, counters | `init-day`, `acquire-lock`, `release-lock`, `update-count`, `remaining`, `should-skip`, `gate-mode`, `update-diversity` |
 | `score_candidates.py` | Score and rank 10-12 comment candidates | `--input`, `--thread-digest`, `--diversity-guidance`, `--weights-file` |
-| `style_guard.py` | Hard style validation (em dash, semicolon, 47 banned phrases) | `--text`, `--file`, `--suggest-fix`, `--json-only` |
+| `style_guard.py` | Hard style validation (em dash, semicolon, 47 banned phrases, fabrication patterns) | `--text`, `--file`, `--suggest-fix`, `--json-only` |
 
 ### Feedback & Safety Scripts
 
@@ -266,6 +306,7 @@ Keep these schedules in sync with the `sessions` list in `runtime/reddit-comment
 5. **Promotion disabled** -- No self-promo language while `promotion_policy: none`
 6. **Rate limiting** -- Random 1-3 min delays, progressive backoff on errors
 7. **Session lock** -- Prevents concurrent sessions from overlapping
+8. **No fabrication** -- Never invents personal stories, team experiences, company names, or job titles. All personal references come from `personal_facts.md`
 
 ### Account Health Monitoring
 

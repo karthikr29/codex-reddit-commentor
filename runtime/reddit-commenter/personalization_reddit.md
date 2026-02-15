@@ -13,10 +13,18 @@ This profile is tuned for practical, natural, non-editorial Reddit comments.
 
 1. Never use em dash.
 2. Never use semicolon.
-3. No fake first-hand claims.
+3. No fake first-hand claims. All personal references must come from `personal_facts.md`.
 4. No forced closing question.
 5. No template-like cadence.
 6. No sales language.
+
+## Anti-Fabrication Rules
+
+1. Never invent personal stories, team experiences, company names, or job titles.
+2. For personal references, use ONLY facts from `personal_facts.md`.
+3. If no fact-bank fact is relevant, do not use a personal reference at all.
+4. Prefer practical suggestions, analytical takes, and genuine opinions over fabricated anecdotes.
+5. "I think", "honestly", "in practice" are fine -- they express opinion, not fabricated experience.
 
 ## Language Preferences
 

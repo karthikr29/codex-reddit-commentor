@@ -55,6 +55,28 @@ PROMO_PHRASES = [
     "book a demo",
 ]
 
+# Patterns that indicate fabricated personal claims (job titles, teams, companies, etc.)
+# These are compiled as case-insensitive regexes and checked against comment text.
+FABRICATION_PATTERNS = [
+    r"\bwe had\b",
+    r"\bteams i know\b",
+    r"\bwhat worked for us\b",
+    r"\bwhen i ran\b",
+    r"\bin my experience at\b",
+    r"\bi used to work\b",
+    r"\bat my company\b",
+    r"\bmy team\b",
+    r"\bour company\b",
+    r"\bback when i was\b",
+    r"\bin my previous role\b",
+    r"\bclients i'?ve worked with\b",
+    r"\bmy (?:startup|agency|firm|business|shop)\b",
+    r"\bour (?:team|org|department|startup)\b",
+    r"\bi ran (?:a|an|the|my)\b",
+    r"\bi managed (?:a|an|the|my|our|several|multiple)\b",
+    r"\bi led (?:a|an|the|my|our)\b",
+]
+
 
 def evaluate_text(text: str, promotion_allowed: bool = False) -> dict[str, Any]:
     issues: list[dict[str, Any]] = []
@@ -91,6 +113,17 @@ def evaluate_text(text: str, promotion_allowed: bool = False) -> dict[str, Any]:
                     }
                 )
 
+    for fab_pattern in FABRICATION_PATTERNS:
+        if re.search(fab_pattern, text, re.IGNORECASE):
+            issues.append(
+                {
+                    "rule": "fabrication_blocked",
+                    "message": f"Contains fabricated personal claim matching: '{fab_pattern}'.",
+                    "phrase": fab_pattern,
+                }
+            )
+            break
+
     sentence_count = max(1, len([s for s in re.split(r"[.!?]+", text) if s.strip()]))
     word_count = len(re.findall(r"\b\w+\b", text))
 
@@ -119,6 +152,7 @@ FIX_HINTS = {
     "no_em_dash": "Replace all em dashes with commas, periods, or short dashes (-).",
     "no_semicolon": "Split semicolon-joined clauses into two separate sentences.",
     "promo_blocked": "Remove promotional language entirely. Rewrite as genuine advice.",
+    "fabrication_blocked": "Remove the fabricated personal claim. Use a factual observation or practical suggestion instead. Only reference personal experience from the personal_facts.md fact bank.",
 }
 
 PHRASE_ALTERNATIVES = {
@@ -145,6 +179,7 @@ PHRASE_ALTERNATIVES = {
     "definitely": "for sure, yes",
     "great question": "good question, fair question",
     "as someone who": "from my experience, having done",
+    "fabrication_blocked": "Use a factual observation or practical suggestion instead",
 }
 
 
