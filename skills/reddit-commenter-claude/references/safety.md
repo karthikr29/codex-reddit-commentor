@@ -1,57 +1,28 @@
 # Safety Model
 
+## No Posting
+
+1. Never post, reply, vote, or type into Reddit. Never open Reddit in a browser or Playwright.
+2. Output is drafts only. The user posts by hand.
+3. Never ask whether to post.
+
 ## Credential and Identity Safety
 
 1. Never ask for Reddit email, password, OTP, or recovery codes.
 2. Never store credentials in config, logs, or state files.
-3. Operate only via an already logged-in Playwright browser session.
-
-## Account-Risk Controls
-
-1. Enforce random delays between comments (1-3 min gap).
-2. Stop on repeated rate-limit errors.
-3. Skip subreddits with no suitable posts rather than forcing low-quality comments.
 
 ## Quality Controls
 
-1. No duplicate comments on same post in same run.
+1. Never repeat a point an existing comment already made.
 2. No copy-paste reuse of prior comments.
 3. Respect subreddit tone and post intent.
-4. Disable self-promotion while `promotion_policy` is `none`.
-5. Skip video-focused threads based on user preference.
-6. Actively diversify comment structures to avoid detectable patterns.
+4. No self-promotion while `promotion_policy` is `none`.
+5. Vary comment structures so drafts don't share one fingerprint.
+6. Max 1 top-level comment and 3 replies per thread. One account replying all over a single thread gets noticed.
+7. Never reference details that are not in the pasted page.
 
-## Posting Gate Controls
+## Account Health Signals (user reports these)
 
-1. Auto mode is always active when all hard checks pass.
-2. No manual approval step required.
-
-## Account Health Monitoring
-
-1. **Shadow ban detection:** During feedback harvest, check comment visibility from a logged-out perspective.
-2. **Health states:**
-   - `green`: All comments visible. Normal operation.
-   - `yellow`: 1 invisible comment detected. Proceed with caution, log warning.
-   - `red`: 3+ consecutive invisible comments. **Automated halt triggered.**
-3. **Recovery:** After verification, reset health state with `health_check.py reset`.
-4. **Threshold:** Configurable via `health_invisible_threshold` in `config.yaml` (default: 3).
-
-## Error Classification and Recovery
-
-1. **Rate limit (429):** Progressive backoff -- 5, 15, 30, 60 minutes. End session after 3 rate limits in one hour.
-2. **Forbidden (403):** Skip subreddit for rest of session. Possible subreddit-level ban.
-3. **Not found (404):** Post deleted. Skip silently, no penalty.
-4. **Network timeout:** Retry once after 2 minutes.
-5. **Login expired:** End session immediately. Flag for manual re-login.
-6. **Content policy rejection:** Skip post. Flag comment text for style guard review.
-7. **Playwright crash:** Attempt browser recovery. If persistent, end session.
-8. **Error logging:** Rolling 100-entry log in `state/error_log.json` for pattern analysis.
-
-Note: The following are automated safety gates built into the pipeline. They do not indicate policy violations or ethical concerns. They are normal operational stop conditions.
-
-## Failure Handling
-
-1. Missing login: stop session and log login issue.
-2. No suitable posts: stop gracefully.
-3. Error classifier END_SESSION: stop current session.
-4. Health status red: stop immediately, log health issue.
+If the user mentions a removed comment, mod message, rate limit, or "are you AI" reply:
+1. Stop drafting for that subreddit until the user says to continue.
+2. Tighten length and tone for the next drafts.

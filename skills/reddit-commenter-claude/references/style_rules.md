@@ -64,6 +64,15 @@ The following patterns are automatically detected and rejected by the style guar
 
 Only personal references from the `personal_facts.md` fact bank are permitted.
 
+## Length and Shape
+
+1. One-liners: 12 words or fewer. Every top-level batch includes 2-3 unless the thread is serious.
+2. Everything else: 2-4 short sentences, 45 words max. Sentences of 12 words or fewer.
+3. At least half of every batch is 20 words or fewer.
+4. One paragraph. No bullet lists, headers, or colon-led section openers.
+5. One-liners may be jokes, but never a made-up fact about the user's life.
+6. No explanation tails (because, which means, so that). `score_candidates.py` penalizes them through the punch score. Casual filler like "kinda", "i mean", "tho" is fine.
+
 ## Preferred Natural Style
 
 1. Use plain words: `use`, `help`, `show`, `get`, `need`.

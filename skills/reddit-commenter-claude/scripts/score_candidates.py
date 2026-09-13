@@ -125,6 +125,40 @@ def naturalness_score(comment_text: str) -> float:
     return max(0.0, min(100.0, score))
 
 
+TAIL_PATTERN = re.compile(r"\b(because|which means|so that|in order to|that way)\b")
+
+
+def punch_score(comment_text: str) -> float:
+    """Reward short sentences and comments, penalize explanation tails and comma-heavy sentences.
+
+    Casual filler ("kinda", "i mean", "tho") is deliberately not penalized.
+    """
+    score = 60.0
+    lower = comment_text.lower()
+    words = len(re.findall(r"\b\w+\b", comment_text))
+    sentences = [s.strip() for s in re.split(r"[.!?]+", comment_text) if s.strip()]
+    sentence_lengths = [len(s.split()) for s in sentences] or [words]
+    avg_len = sum(sentence_lengths) / len(sentence_lengths)
+
+    if avg_len <= 8:
+        score += 20
+    elif avg_len <= 12:
+        score += 10
+    elif avg_len > 18:
+        score -= 15
+
+    if words <= 12:
+        score += 10
+    elif words > 45:
+        score -= 20
+
+    score -= 5 * len(TAIL_PATTERN.findall(lower))
+    if any(s.count(",") > 2 for s in sentences):
+        score -= 5
+
+    return max(0.0, min(100.0, score))
+
+
 def safety_score(style_result: dict[str, Any]) -> float:
     if not style_result["passed"]:
         return 0.0
@@ -208,6 +242,7 @@ DEFAULT_WEIGHTS = {
     "safety": 0.15,
     "novelty": 0.10,
 }
+PUNCH_WEIGHT = 0.25
 
 
 def weighted_total(
@@ -219,6 +254,7 @@ def weighted_total(
     novelty: float = 80.0,
     div_bonus: float = 0.0,
     weights: dict[str, float] | None = None,
+    punch: float = 60.0,
 ) -> float:
     w = weights or DEFAULT_WEIGHTS
     total = (
@@ -229,6 +265,8 @@ def weighted_total(
         + w.get("safety", 0.15) * safety
         + w.get("novelty", 0.10) * novelty
     )
+    # Punch always gets 25% of the total. Older weight profiles without a punch key are scaled to the remaining 75%.
+    total = (1 - PUNCH_WEIGHT) * total + PUNCH_WEIGHT * punch
     total += div_bonus
     return round(max(0.0, min(100.0, total)), 2)
 
@@ -252,7 +290,8 @@ def evaluate_candidate(
     safety = safety_score(style)
     novel = novelty_score(text, thread_digest)
     div_bon = diversity_bonus(text, div_guidance)
-    total = weighted_total(intent, tone, specificity, natural, safety, novel, div_bon, weights)
+    punch = punch_score(text)
+    total = weighted_total(intent, tone, specificity, natural, safety, novel, div_bon, weights, punch)
 
     # Pre-rejection score (useful for retry logic)
     pre_rejection_score = total
@@ -274,6 +313,7 @@ def evaluate_candidate(
             "safety_compliance": round(safety, 2),
             "novelty": round(novel, 2),
             "diversity_bonus": round(div_bon, 2),
+            "punch": round(punch, 2),
         },
         "style": style,
     }
