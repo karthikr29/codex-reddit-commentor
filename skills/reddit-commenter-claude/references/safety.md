@@ -13,7 +13,7 @@
 
 ## Quality Controls
 
-1. Never repeat a point an existing comment already made.
+1. Top-level comments never reference, build on, or reword other commenters' points. Replies use only the post and the comment they reply to.
 2. No copy-paste reuse of prior comments.
 3. Respect subreddit tone and post intent.
 4. No self-promotion while `promotion_policy` is `none`.

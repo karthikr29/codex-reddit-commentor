@@ -66,7 +66,7 @@ Only personal references from the `personal_facts.md` fact bank are permitted.
 
 ## Length and Shape
 
-1. One-liners: 12 words or fewer. Every top-level batch includes 2-3 unless the thread is serious.
+1. One-liners: 12 words or fewer. Every top-level batch includes 2-3 unless the post is serious.
 2. Everything else: 2-4 short sentences, 45 words max. Sentences of 12 words or fewer.
 3. At least half of every batch is 20 words or fewer.
 4. One paragraph. No bullet lists, headers, or colon-led section openers.
@@ -79,7 +79,7 @@ Only personal references from the `personal_facts.md` fact bank are permitted.
 2. Use contractions naturally: `don't`, `can't`, `it's`.
 3. Mix short and medium sentence lengths.
 4. Keep direct tone. Avoid excessive hedging.
-5. End with a question only when it naturally helps the thread.
+5. End with a question only when it naturally helps the conversation.
 
 ## Validation Outcome
 
